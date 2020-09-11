@@ -1,6 +1,6 @@
 ### Fan of Star Wars
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/t66nOkMIoMI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![Star Wars](./sw-deaths.gif)](https://www.youtube.com/watch?time_continue=107&v=t66nOkMIoMI&feature=emb_logo&ab_channel=MarceloZuniga)
 
 <!--
 **radiantspace/radiantspace** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
