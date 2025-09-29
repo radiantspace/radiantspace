@@ -1,9 +1,21 @@
-### Fan of Star Wars
-
-[![Star Wars](https://github.com/radiantspace/radiantspace/raw/master/sw-deaths.gif)](https://www.youtube.com/watch?time_continue=107&v=t66nOkMIoMI&feature=emb_logo&ab_channel=MarceloZuniga)
-
 ### Projects
 
-- Personalized FLUX models - http://avtr.app
 - AI in Telegram - http://gienji.me
+- Personalized FLUX models - http://avtr.app
 - Tibetan Dictionary - http://mytibetan.app
+- Detect AI content - https://aiunmaskr.com
+
+### Currently reading
+
+- The Sword of Freedom, Yossi Cohen
+- On Democracies and Death Cults, Douglas Murray
+- The Jewish War, Josephus Flavius
+
+### Recommended reading
+
+- The way things are, Lama Ole Nydhal
+- Extreme ownership, Jocko Willink and Leif Babin
+- Atomic habbits, James Clear
+- Radical Candor, Kim Scott
+- Thinking Fast and Slow, Daniel Kahneman
+- The Parasitic Mind, Gad Saad
