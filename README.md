@@ -3,7 +3,9 @@
 - AI in Telegram - http://gienji.me
 - Personalized FLUX models - http://avtr.app
 - Tibetan Dictionary - http://mytibetan.app
-- Detect AI content - https://aiunmaskr.com
+- Automate Trend Hunting for your online Shop - http://idropship.co
+- Detect AI content - http://aiunmaskr.com
+- Epic T-shirts - http://radiantare.co
 
 ### Currently reading
 
