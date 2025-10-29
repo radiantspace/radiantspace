@@ -4,7 +4,6 @@
 - Personalized FLUX models - http://avtr.app
 - Tibetan Dictionary - http://mytibetan.app
 - Automate Trend Hunting for your online Shop - http://idropship.co
-- Detect AI content - http://aiunmaskr.com
 - Epic T-shirts - http://radiantart.co
 
 ### Currently reading
