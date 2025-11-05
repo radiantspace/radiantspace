@@ -3,8 +3,7 @@
 - AI in Telegram - http://gienji.me
 - Personalized FLUX models - http://avtr.app
 - Tibetan Dictionary - http://mytibetan.app
-- Automate Trend Hunting for your online Shop - http://idropship.co
-- Epic T-shirts - http://radiantart.co
+- Epic T-shirts (@art-ka project) - http://radiantartshop.com
 
 ### Currently reading
 
