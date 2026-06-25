@@ -7,7 +7,7 @@
 
 ### Currently reading
 
-- The Sword of Freedom, Yossi Cohen
+- Suicidal Empathy, Gad Saad
 - On Democracies and Death Cults, Douglas Murray
 - The Jewish War, Josephus Flavius
 
@@ -19,3 +19,4 @@
 - Radical Candor, Kim Scott
 - Thinking Fast and Slow, Daniel Kahneman
 - The Parasitic Mind, Gad Saad
+- The Sword of Freedom, Yossi Cohen
