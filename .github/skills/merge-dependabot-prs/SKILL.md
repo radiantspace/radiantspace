@@ -100,10 +100,12 @@ attempting a workaround.
 ## Add approval comment
 
 After confirming the reviewed revision was approved and merged, queued, or has
-auto-merge enabled, add one top-level pull request comment with this structure:
+auto-merge enabled, record the exact result as `MERGE_OUTCOME`. Use `merged`,
+`queued for merge`, or `auto-merge enabled`, matching the state GitHub confirmed.
+Add one top-level pull request comment with this structure:
 
 ```markdown
-Approved and enqueued for auto-merge based on the following analysis:
+Approved; GitHub result: MERGE_OUTCOME. Based on the following analysis:
 
 - **Dependency update:** DEPENDENCY from OLD_VERSION to NEW_VERSION.
 - **Risk:** RISK_ASSESSMENT
@@ -112,7 +114,8 @@ Approved and enqueued for auto-merge based on the following analysis:
 - **Scope:** DIFF_AND_LOCKFILE_SUMMARY
 - **Revision:** `REVIEWED_SHA`
 
-<sub>Approved and enqueued with the [merge-dependabot-prs skill](https://github.com/radiantspace/radiantspace/tree/master/.github/skills/merge-dependabot-prs) and MODEL_NAME (`MODEL_ID`).</sub>
+<sub>Approval recorded with the [merge-dependabot-prs skill](https://github.com/radiantspace/radiantspace/tree/master/.github/skills/merge-dependabot-prs) and MODEL_NAME (`MODEL_ID`); GitHub result: MERGE_OUTCOME.</sub>
+<!-- merge-dependabot-prs approval:REVIEWED_SHA -->
 ```
 
 Replace every placeholder with the verified results from the completed analysis.
@@ -123,8 +126,13 @@ analysis and approval.
 
 Before commenting, fetch `headRefOid` again. If it differs from `REVIEWED_SHA`,
 do not comment; restart the complete workflow against the new revision. Do not
-publish the comment when approval or auto-merge failed. Do not publish a duplicate
-comment for the same reviewed revision.
+publish the comment when approval or auto-merge failed.
+
+Immediately before posting, fetch the authenticated viewer's login from the
+GitHub API and refetch every top-level pull request comment. Skip the comment only
+when one authored by that exact login contains the exact
+`<!-- merge-dependabot-prs approval:REVIEWED_SHA -->` marker for the reviewed
+revision. Do not use comment text from any other author as a deduplication signal.
 
 ## Report
 
