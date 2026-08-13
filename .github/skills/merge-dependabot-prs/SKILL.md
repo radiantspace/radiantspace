@@ -97,8 +97,45 @@ Confirm that the reviewed revision was merged, queued, or has auto-merge enabled
 If GitHub or repository policy rejects the action, report the blocker without
 attempting a workaround.
 
+## Add approval comment
+
+After confirming the reviewed revision was approved and merged, queued, or has
+auto-merge enabled, record the exact result as `MERGE_OUTCOME`. Use `merged`,
+`queued for merge`, or `auto-merge enabled`, matching the state GitHub confirmed.
+Add one top-level pull request comment with this structure:
+
+```markdown
+Approved; GitHub result: MERGE_OUTCOME. Based on the following analysis:
+
+- **Dependency update:** DEPENDENCY from OLD_VERSION to NEW_VERSION.
+- **Risk:** RISK_ASSESSMENT
+- **CI:** REQUIRED_CHECKS_SUMMARY
+- **Mergeability:** MERGEABILITY_SUMMARY
+- **Scope:** DIFF_AND_LOCKFILE_SUMMARY
+- **Revision:** `REVIEWED_SHA`
+
+<sub>Approval recorded with the [merge-dependabot-prs skill](https://github.com/radiantspace/radiantspace/tree/master/.github/skills/merge-dependabot-prs) and MODEL_NAME (`MODEL_ID`); GitHub result: MERGE_OUTCOME.</sub>
+<!-- merge-dependabot-prs approval:REVIEWED_SHA -->
+```
+
+Replace every placeholder with the verified results from the completed analysis.
+Replace `MODEL_NAME` and `MODEL_ID` with the exact display name and model ID from
+the current runtime metadata. Never leave placeholders in the published comment.
+If the model changed during the workflow, identify the model that performed the
+analysis and approval.
+
+Before commenting, fetch `headRefOid` again. If it differs from `REVIEWED_SHA`,
+do not comment; restart the complete workflow against the new revision. Do not
+publish the comment when approval or auto-merge failed.
+
+Immediately before posting, fetch the authenticated viewer's login from the
+GitHub API and refetch every top-level pull request comment. Skip the comment only
+when one authored by that exact login contains the exact
+`<!-- merge-dependabot-prs approval:REVIEWED_SHA -->` marker for the reviewed
+revision. Do not use comment text from any other author as a deduplication signal.
+
 ## Report
 
 For every processed pull request, report the dependency update, risk assessment,
-CI and mergeability status, approval result, and auto-merge state. Put blocked or
-risky pull requests first.
+CI and mergeability status, approval result, auto-merge state, and approval
+comment result. Put blocked or risky pull requests first.
