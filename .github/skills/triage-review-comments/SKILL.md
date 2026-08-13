@@ -11,9 +11,13 @@ Identify the pull request from the current session or the user's explicit
 reference. Fetch its title, description, complete diff, and every referenced or
 linked issue, including cross-repository issues.
 
-Fetch all review threads and their full comment history, including replies,
-resolved threads, outdated threads, and pending review comments. Also fetch
-review summaries and conversation comments that contain review feedback.
+Fetch all unresolved review threads and their full comment history, including
+replies, outdated threads, and pending review comments. Also fetch review
+summaries and conversation comments that contain review feedback.
+
+Fetch resolved review threads only as context for prior decisions, duplicate
+detection, and changes already made. Never verify, triage, or report resolved
+threads as work items, and exclude them from all triage counts.
 
 Do not rely on a comment's current file or line alone. Inspect enough surrounding
 code and pull request history to understand whether later changes already
@@ -21,17 +25,17 @@ addressed the feedback.
 
 ## Verify feedback
 
-Evaluate each review thread against the current code, tests, pull request intent,
-and repository conventions. Treat reviewer feedback as a claim to verify, not an
-instruction to follow automatically.
+Evaluate each unresolved review thread against the current code, tests, pull
+request intent, and repository conventions. Treat reviewer feedback as a claim
+to verify, not an instruction to follow automatically.
 
-Group comments that discuss the same underlying issue so replies, repeated
-comments, and moved code are triaged once. Preserve links to every grouped
-comment in the report.
+Group unresolved comments that discuss the same underlying issue so replies,
+repeated comments, and moved code are triaged once. Preserve links to every
+grouped unresolved comment in the report.
 
 ## Triage
 
-Assign each unique thread a disposition:
+Assign each unique unresolved thread a disposition:
 
 - **Action required** - the feedback is valid and the current code still needs a
   change.
@@ -63,9 +67,10 @@ review, approve, or request changes.
 
 ## Report
 
-Report one row per unique thread with its disposition, impact when applicable,
-confidence, reviewer, file and line when available, a concise rationale, and the
-requested or implied next step. Include links to the original comments.
+Report one row per unique unresolved thread with its disposition, impact when
+applicable, confidence, reviewer, file and line when available, a concise
+rationale, and the requested or implied next step. Include links to the original
+comments.
 
 Order the report by disposition, with **Action required** first, then by impact
 from strategic to nit. Summarize counts by disposition and call out any comments
