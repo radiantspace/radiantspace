@@ -83,9 +83,16 @@ Thanks for the work here. The overall direction is [brief assessment].
 - **`path/to/file:line` - Finding:** Impact and practical next step.
 
 Non-blocking suggestions are staged inline.
+
+<sub>Review created with the [review-pr skill](https://github.com/radiantspace/radiantspace/tree/master/.github/skills/review-pr) and MODEL_NAME (`MODEL_ID`).</sub>
 ```
 
 Keep both headings and write `None.` under a heading with no findings.
+Replace `MODEL_NAME` and `MODEL_ID` with the exact display name and model ID from
+the current runtime metadata. Never leave either placeholder in the staged
+review. If the model changed during the workflow, identify the model that
+performed the analysis and staged the review. Keep the attribution as the final
+line of the top-level review body.
 
 Example:
 
