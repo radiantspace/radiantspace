@@ -1,44 +1,57 @@
 ---
 name: review-pr
-description: Review a pull request, triage findings as strategic, tactical, or nits, and stage friendly review comments without publishing them.
+description: >-
+  Review a pull request, filter for high-confidence findings, and stage concise
+  humane comments without publishing them.
 user-invocable: true
 ---
 
 # Review PR
 
-## Gather context
+## Understand the change
 
-Before analyzing the diff, fetch the pull request title and description. Identify
-every referenced or linked issue, including cross-repository references, and fetch
-each issue's title and description.
+Resolve the target repository, pull request, and verified `headRefOid` before
+reviewing. Fetch the pull request title and description, then fetch linked issues
+or discussions that define its intent, constraints, or acceptance criteria.
+Follow cross-repository references when they are relevant, but do not recursively
+chase unrelated links.
 
-Use this context to understand the intended behavior, constraints, and acceptance
-criteria. Then review the complete pull request diff and enough surrounding code
-to understand the impact of each change. Do not treat the pull request or issue
-description as proof that the implementation is correct.
+Read the repository's review and coding instructions, the complete diff, and
+enough surrounding code, call sites, and tests to understand each change. Use
+CI, linters, and targeted tests when they can verify a concern cheaply. Treat the
+pull request description as context, not proof that the implementation is
+correct.
 
-## Triage
+## Find and filter issues
 
-Classify every actionable finding:
+Review for correctness, security, data integrity, user-visible behavior,
+reliability, performance, maintainability, and meaningful test gaps.
 
-- **Strategic** - architecture, product direction, security, data integrity, or a
-  correctness issue that may require changing the approach.
-- **Tactical** - a localized implementation, reliability, performance,
-  maintainability, or test coverage issue.
-- **Nit** - an optional, low-impact improvement to naming, readability,
-  consistency, or style.
+Generate candidate findings, then run a separate verification pass whose job is
+to delete weak findings. Keep a finding only when:
 
-Verify each finding against the repository context. Do not raise speculative,
-duplicate, or pre-existing issues unless the pull request makes them materially
-worse.
+- the pull request introduced it or materially worsened it;
+- a concrete trigger and impact can be explained;
+- repository context supports the claim;
+- it is not merely an undocumented style preference; and
+- CI, a linter, or existing feedback does not already cover it.
 
-Also assign each finding a merge impact:
+For lower-impact concerns, prefer silence over speculation. Report uncertain
+high-impact risks only when the uncertainty is explicit and the author can
+resolve it with a concrete check. An empty review is valid.
 
-- **Blocker** - must be fixed before merge because it can cause incorrect
+Classify public comments with one clear merge-impact label:
+
+- **Blocking** - must be resolved before merge because it can cause incorrect
   behavior, data loss, a security issue, or another unacceptable outcome.
-- **Critical** - has substantial user or operational impact and should be fixed
-  before merge, but does not invalidate the overall approach.
-- **Non-blocking** - useful follow-up that does not need to hold the merge.
+- **Suggestion** - a concrete improvement that should not block the merge.
+- **Nit** - a trivial optional improvement. Omit nits by default unless the user
+  requests an exhaustive review or a repository standard clearly supports it.
+
+Do not expose internal labels such as strategic, tactical, or critical. Stage
+every verified blocker. Rank non-blocking findings and normally stage no more
+than the three highest-value suggestions. Consolidate repeated instances of the
+same underlying problem into one representative comment.
 
 ## Deduplicate existing feedback
 
@@ -49,121 +62,97 @@ same issue to be reported again.
 
 Compare findings by their underlying issue, not only by exact wording, file, or
 line. If prior feedback already covers a finding, do not stage another comment
-for it. Keep track of skipped duplicates for the final report.
+for it. Keep only the duplicate count for the final report.
+
+## Write humane comments
+
+Write comments for the author, not for a review taxonomy. Start with the concrete
+behavior or risk, explain the realistic consequence, and give a practical next
+step when one is clear. Keep most comments to one short paragraph.
+
+Use `**Blocking:**`, `**Suggestion:**`, or `**Nit:**` as the prefix. Comment on
+the code, never the developer. Do not use canned praise, filler, accusatory
+language, or timid questions for verified defects. Ask a question only when the
+answer genuinely determines whether a problem exists. Do not prescribe a
+detailed implementation when several solutions would be valid.
+
+Use a GitHub `suggestion` block only for a mechanical fix that is safer to apply
+than to rewrite manually.
+
+Example:
+
+> **Blocking:** This returns success after the write fails, so callers can lose
+> updates silently. Propagate the error and cover the failed-write path.
 
 ## Stage comments
 
 Stage review comments in the pending review. Never submit, publish, approve, or
-request changes.
+request changes. Do not use `gh pr review`, the REST submit-review endpoint, or
+the GraphQL `submitPullRequestReview` mutation.
 
-Before calling the app-native `add_pr_review_comment` helper, confirm that the
-current project session is tracking the target repository and pull request and
-that its remote branch resolves to the target pull request's verified
-`headRefOid`. Passing `project_session_id` does not retarget the helper to an
-arbitrary pull request. If the session tracks another branch or pull request, or
-the expected remote ref does not resolve, do not call the helper and wait for it
-to fail.
+Prefer the app-native `add_pr_review_comment` helper for line comments when the
+current project session tracks the target repository and pull request and its
+remote branch resolves to the verified `headRefOid`. Passing
+`project_session_id` does not retarget the helper to an arbitrary pull request.
+If the session or ref does not match, skip the helper instead of calling it
+merely to discover the mismatch.
 
-When the helper cannot safely target the pull request and the current viewer has
-no pending review, stage all inline comments atomically with GitHub's **Create a
-review for a pull request** REST endpoint. Pass the verified `headRefOid` as
-`commit_id`, include every comment's `path`, changed `line`, `side`, and `body`,
-and omit both `event` and the top-level `body`. Omitting `event` keeps the review
-in `PENDING` state instead of publishing it.
+Otherwise, use these API fallbacks:
 
-If the viewer already has a pending review, use the authenticated pull request
-`/files` page to add comments to that review. Use **Start a review** for the
-first comment or **Add review comment** for subsequent comments. Never use
-**Add single comment**, which publishes immediately.
+- If the authenticated viewer already has a pending review, verify its state and
+  commit, then add comments with GraphQL `addPullRequestReviewThread` and the
+  pending review's node ID. Use `subjectType: LINE` with `path`, `line`, and
+  `side` for line comments. Use `subjectType: FILE` with `path` when a verified
+  finding belongs to a changed file but no individual changed line is
+  meaningful.
+- If no pending review exists and every finding has a meaningful changed line,
+  stage all comments atomically with the REST **Create a review for a pull
+  request** endpoint. Pass the verified `headRefOid` as `commit_id`, include
+  each comment's `path`, `line`, `side`, optional range, and `body`, and omit
+  both `event` and the top-level `body`.
+- If a new review needs file-level comments, create an empty pending review with
+  GraphQL `addPullRequestReview`, pass the verified `headRefOid` as `commitOID`,
+  and omit `event` and `body`. Then attach each thread with
+  `addPullRequestReviewThread`. Verify every mutation because this path is not
+  atomic.
 
-After either staging path, fetch the pending review and verify that its state is
-`PENDING`, its commit matches the verified `headRefOid`, and every intended
-comment is attached to the expected file and diff position. Treat any mismatch
-as a staging failure and report it without publishing a workaround.
+Do not force a finding onto an unrelated line. If no meaningful line or changed
+file exists, keep it in the final report instead of staging it.
 
-Write each comment as a friendly, direct suggestion or question. Prefix it with
-its triage category, explain the concrete impact, and propose a practical next
-step when useful.
+Do not populate or update the pending review's top-level body. GitHub's web
+composer does not reliably load API-created review bodies and can overwrite
+them when the user submits. Inline and file-level threads are the durable staged
+content.
 
-Attach comments to the most relevant changed lines whenever the diff provides a
-meaningful location. If no changed line is suitable, keep the finding in the
-triage summary instead of forcing it onto an unrelated line.
+Immediately before staging, verify that the pull request head still matches the
+analyzed `headRefOid`. After staging, fetch the pending review and verify that:
 
-After staging the inline comments, compose a friendly, helpful high-level
-summary for the pending review's top-level body. List every blocker and critical
-finding with its location, concrete impact, and recommended next step. Mention
-that non-blocking suggestions are staged inline. If there are no blockers or
-critical findings, say that explicitly instead of leaving the body empty.
+- its state is `PENDING` and it has no `submitted_at`;
+- its commit matches the verified `headRefOid`; and
+- every intended comment has the expected body, path, side, and line range.
 
-Use this structure:
-
-```markdown
-Thanks for the work here. The overall direction is [brief assessment].
-
-## Blockers
-- **`path/to/file:line` - Finding:** Impact and practical next step.
-
-## Critical findings
-- **`path/to/file:line` - Finding:** Impact and practical next step.
-
-Non-blocking suggestions are staged inline.
-
-<sub>Review created with the [review-pr skill](https://github.com/radiantspace/radiantspace/tree/master/.github/skills/review-pr) and MODEL_NAME (`MODEL_ID`).</sub>
-```
-
-Keep both headings and write `None.` under a heading with no findings.
-Replace `MODEL_NAME` and `MODEL_ID` with the exact display name and model ID from
-the current runtime metadata. Never leave either placeholder in the staged
-review. If the model changed during the workflow, identify the model that
-performed the analysis and staged the review. Keep the attribution as the final
-line of the top-level review body.
-
-GitHub does not load a body supplied through the pending-review REST API into
-the **Finish your review** composer. Do not set only the API review body and
-claim that the summary was prepopulated.
-
-Open the pull request's canonical `/files` page in an authenticated browser,
-open **Review changes** or **Finish your review**, and fill the top-level
-**Leave a comment** textbox with the complete summary. Keep **Comment** selected.
-Never click **Submit review**, **Approve**, or **Request changes**. Re-read the
-composer and verify that the exact summary is present, then leave the review
-dialog open for the user.
-
-If the authenticated browser or review composer is unavailable, keep the inline
-comments staged but report that the summary could not be prepopulated. Include
-the complete summary as raw Markdown in a fenced `markdown` code block so it can
-be pasted without reconstructing headings, lists, or attribution. Never claim
-that the summary is prepopulated unless it is visible in the review composer.
-
-Example:
-
-> **Tactical:** Could we handle the failed write here instead of continuing?
-> Otherwise the response reports success even though the update was lost.
+Treat any mismatch or partial mutation failure as a staging failure. Report it
+without publishing a workaround.
 
 ## Report
 
-Report every verified finding in one self-contained Markdown table so the reader
-does not need to open or scroll through the inline comments to understand the
-analysis. Sort blockers first, then critical findings, then non-blocking
-findings. Use these columns:
+Lead with one status line containing the blocker count, suggestion count, and
+duplicate count. Then list each verified finding once, blockers first, using:
 
-| Impact | Category | Location | Full analysis | Recommended next step | Disposition |
-| --- | --- | --- | --- | --- | --- |
+```markdown
+- **Blocking - `path/to/file:line`:** Concrete impact and next step. Staged.
+```
 
-Repeat the complete substance of each finding in the table, including its
-concrete impact and reasoning. Do not replace the analysis with a short title or
-refer the reader to an inline comment. The disposition must say whether the
-finding was staged inline, kept in the summary because no suitable changed line
-exists, or skipped as duplicate existing feedback. Include duplicate findings
-in the table and report the total number skipped.
+Use `Reported only` instead of `Staged` when no meaningful diff location exists.
+Do not repeat skipped duplicate findings or reproduce every inline comment in a
+large table.
 
-After the table, include a Markdown link labeled `Open staged review` to the pull
-request's Files changed review page, using the canonical pull request URL with
-`/files`. If the summary was prepopulated, clearly state that the inline
-comments are staged, the summary is prepopulated in the open review composer,
-and nothing was published. Otherwise, clearly state that only the inline
-comments are staged and the summary still needs to be pasted. Never describe
-the composer text as server-side staged review content.
+If comments were staged, include a Markdown link labeled `Open staged review` to
+the canonical pull request `/files` page and state that nothing was published.
+Do not open the page.
 
-If there are no actionable findings, say so, report the duplicate count, include
-the staged-review link, and do not manufacture comments.
+If there are no actionable findings, say so, report the duplicate count, and do
+not create an empty pending review or manufacture comments.
+
+End with a short attribution naming the `review-pr` skill and the exact model
+display name and model ID from the current runtime metadata.
