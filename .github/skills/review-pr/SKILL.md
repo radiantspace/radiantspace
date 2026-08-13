@@ -1,6 +1,7 @@
 ---
 name: review-pr
 description: Review a pull request, triage findings as strategic, tactical, or nits, and stage friendly review comments without publishing them.
+user-invocable: true
 ---
 
 # Review PR

@@ -1,6 +1,7 @@
 ---
 name: triage-review-comments
 description: Fetch pull request review comments, verify and triage the feedback, and report what needs attention without taking action.
+user-invocable: true
 ---
 
 # Triage Review Comments
