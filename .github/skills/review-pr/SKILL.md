@@ -131,8 +131,9 @@ dialog open for the user.
 
 If the authenticated browser or review composer is unavailable, keep the inline
 comments staged but report that the summary could not be prepopulated. Include
-the complete summary in the final report for manual pasting. Never claim that
-the summary is prepopulated unless it is visible in the review composer.
+the complete summary as raw Markdown in a fenced `markdown` code block so it can
+be pasted without reconstructing headings, lists, or attribution. Never claim
+that the summary is prepopulated unless it is visible in the review composer.
 
 Example:
 
