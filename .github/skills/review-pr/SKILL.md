@@ -147,15 +147,14 @@ does not need to open or scroll through the inline comments to understand the
 analysis. Sort blockers first, then critical findings, then non-blocking
 findings. Use these columns:
 
-| Impact | Category | Location | Full analysis | Recommended next step | Disposition |
-| --- | --- | --- | --- | --- | --- |
+| Impact / Category | Location / Full analysis | Recommended action |
+| --- | --- | --- |
 
 Repeat the complete substance of each finding in the table, including its
 concrete impact and reasoning. Do not replace the analysis with a short title or
-refer the reader to an inline comment. The disposition must say whether the
-finding was staged inline, kept in the summary because no suitable changed line
-exists, or skipped as duplicate existing feedback. Include duplicate findings
-in the table and report the total number skipped.
+refer the reader to an inline comment. Start each analysis cell with the finding
+location. Include duplicate findings in the table and report the total number
+skipped.
 
 After the table, include a Markdown link labeled `Open staged review` to the pull
 request's Files changed review page, using the canonical pull request URL with
