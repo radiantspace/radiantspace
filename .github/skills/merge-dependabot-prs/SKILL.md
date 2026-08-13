@@ -1,6 +1,7 @@
 ---
 name: merge-dependabot-prs
 description: Sanity-check Dependabot pull requests, flag risky dependency changes before approval, approve safe updates, and enable auto-merge.
+user-invocable: true
 ---
 
 # Merge Dependabot PRs
