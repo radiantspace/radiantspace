@@ -31,6 +31,14 @@ Verify each finding against the repository context. Do not raise speculative,
 duplicate, or pre-existing issues unless the pull request makes them materially
 worse.
 
+Also assign each finding a merge impact:
+
+- **Blocker** - must be fixed before merge because it can cause incorrect
+  behavior, data loss, a security issue, or another unacceptable outcome.
+- **Critical** - has substantial user or operational impact and should be fixed
+  before merge, but does not invalidate the overall approach.
+- **Non-blocking** - useful follow-up that does not need to hold the merge.
+
 ## Deduplicate existing feedback
 
 Before staging any comment, fetch the pull request's existing conversation
@@ -55,6 +63,30 @@ Attach comments to the most relevant changed lines whenever the diff provides a
 meaningful location. If no changed line is suitable, keep the finding in the
 triage summary instead of forcing it onto an unrelated line.
 
+After staging the inline comments, prepopulate the pending review's top-level
+review body with a friendly, helpful high-level summary. This is part of the
+staged review, not a separate conversation comment. Never submit or publish it.
+List every blocker and critical finding with its location, concrete impact, and
+recommended next step. Mention that non-blocking suggestions are staged inline.
+If there are no blockers or critical findings, say that explicitly instead of
+leaving the body empty.
+
+Use this structure:
+
+```markdown
+Thanks for the work here. The overall direction is [brief assessment].
+
+## Blockers
+- **`path/to/file:line` - Finding:** Impact and practical next step.
+
+## Critical findings
+- **`path/to/file:line` - Finding:** Impact and practical next step.
+
+Non-blocking suggestions are staged inline.
+```
+
+Keep both headings and write `None.` under a heading with no findings.
+
 Example:
 
 > **Tactical:** Could we handle the failed write here instead of continuing?
@@ -62,7 +94,25 @@ Example:
 
 ## Report
 
-Summarize the staged findings by category, including the file and line when
-available, and note how many duplicates were skipped. Clearly state that the
-review remains staged and unpublished. If there are no actionable findings, say
-so and do not manufacture comments.
+Report every verified finding in one self-contained Markdown table so the reader
+does not need to open or scroll through the inline comments to understand the
+analysis. Sort blockers first, then critical findings, then non-blocking
+findings. Use these columns:
+
+| Impact | Category | Location | Full analysis | Recommended next step | Disposition |
+| --- | --- | --- | --- | --- | --- |
+
+Repeat the complete substance of each finding in the table, including its
+concrete impact and reasoning. Do not replace the analysis with a short title or
+refer the reader to an inline comment. The disposition must say whether the
+finding was staged inline, kept in the summary because no suitable changed line
+exists, or skipped as duplicate existing feedback. Include duplicate findings
+in the table and report the total number skipped.
+
+After the table, include a Markdown link labeled `Open staged review` to the pull
+request's Files changed review page, using the canonical pull request URL with
+`/files`. Clearly state that the review and its prepopulated summary remain
+staged and unpublished.
+
+If there are no actionable findings, say so, report the duplicate count, include
+the staged-review link, and do not manufacture comments.
