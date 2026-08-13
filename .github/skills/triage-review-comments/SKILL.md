@@ -82,11 +82,19 @@ review, approve, or request changes.
 
 ## Report
 
-Report one row per unique unresolved feedback group with its disposition, impact
-when applicable, confidence, reviewer, file and line when available, a concise
-rationale, and the requested or implied next step. Include links to every
-original feedback item in the group.
+Use free-form Markdown, never a Markdown table. Start with a compact summary of
+counts by disposition and name the reviewers represented in the report once.
+
+Give each unique unresolved feedback group its own short subsection. Include the
+disposition, impact when applicable, confidence, file and line when available, a
+concise rationale, and the requested or implied next step. Link every original
+feedback item in the group.
+
+Keep reviewer metadata without mechanically repeating reviewer names in every
+subsection. Mention a reviewer inline only when attribution adds useful context,
+such as distinguishing conflicting feedback, identifying a follow-up, or
+crediting the source of a specific proposal.
 
 Order the report by disposition, with **Action required** first, then by impact
-from strategic to nit. Summarize counts by disposition and call out any comments
-that could not be fetched or verified. Clearly state that no action was taken.
+from strategic to nit. Call out any comments that could not be fetched or
+verified. Clearly state that no action was taken.
