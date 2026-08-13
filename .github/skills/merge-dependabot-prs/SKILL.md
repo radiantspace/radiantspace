@@ -97,8 +97,37 @@ Confirm that the reviewed revision was merged, queued, or has auto-merge enabled
 If GitHub or repository policy rejects the action, report the blocker without
 attempting a workaround.
 
+## Add approval comment
+
+After confirming the reviewed revision was approved and merged, queued, or has
+auto-merge enabled, add one top-level pull request comment with this structure:
+
+```markdown
+Approved and enqueued for auto-merge based on the following analysis:
+
+- **Dependency update:** DEPENDENCY from OLD_VERSION to NEW_VERSION.
+- **Risk:** RISK_ASSESSMENT
+- **CI:** REQUIRED_CHECKS_SUMMARY
+- **Mergeability:** MERGEABILITY_SUMMARY
+- **Scope:** DIFF_AND_LOCKFILE_SUMMARY
+- **Revision:** `REVIEWED_SHA`
+
+<sub>Approved and enqueued with the [merge-dependabot-prs skill](https://github.com/radiantspace/radiantspace/tree/master/.github/skills/merge-dependabot-prs) and MODEL_NAME (`MODEL_ID`).</sub>
+```
+
+Replace every placeholder with the verified results from the completed analysis.
+Replace `MODEL_NAME` and `MODEL_ID` with the exact display name and model ID from
+the current runtime metadata. Never leave placeholders in the published comment.
+If the model changed during the workflow, identify the model that performed the
+analysis and approval.
+
+Before commenting, fetch `headRefOid` again. If it differs from `REVIEWED_SHA`,
+do not comment; restart the complete workflow against the new revision. Do not
+publish the comment when approval or auto-merge failed. Do not publish a duplicate
+comment for the same reviewed revision.
+
 ## Report
 
 For every processed pull request, report the dependency update, risk assessment,
-CI and mergeability status, approval result, and auto-merge state. Put blocked or
-risky pull requests first.
+CI and mergeability status, approval result, auto-merge state, and approval
+comment result. Put blocked or risky pull requests first.
