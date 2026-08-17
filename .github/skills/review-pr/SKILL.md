@@ -144,16 +144,34 @@ Then output a friendly top-level review body as raw Markdown in a fenced
 findings so the user can paste it directly into GitHub without reconstructing
 headings, lists, or attribution.
 
-Write the body as a reviewer speaking directly to the author. Open with one or
-two substantive sentences assessing the overall change. Be warm and direct, but
-avoid canned praise, filler, staging details, duplicate counts, and internal
-review process language.
+Write the body as a reviewer speaking directly to the author. Only the opening
+summary should be friendly, thankful, and endorsing. Name the solid things that
+are actually present - intent, shape, approach, or more than one of those.
+Then, if there are blockers, pivot with a 1-3 sentence summary of the catch or
+catches. Leave the details for the lists below. Do not bury the risk, and do
+not turn the opener into canned praise, filler, staging details, duplicate
+counts, or internal review process language.
+
+The `## Blocking issues` and `## Suggestions` lists stay technical and to the
+point. No warmth, thanks, or endorsement in those bullets - just impact and a
+practical next step.
+
+Good opener:
+
+> Looks solid overall - the orchestration shape is right and the intent is
+> clear. One important catch though: it currently produces false-green results
+> on the paths it claims to gate.
+
+Bad opener:
+
+> The orchestration shape is right, but it produces false-green results on
+> paths it claims to gate.
 
 Use this structure:
 
 ````markdown
 ```markdown
-[Brief, honest assessment of the change and its overall direction.]
+[Friendly, endorsing assessment of the solid parts, then a 1-3 sentence catch summary if needed.]
 
 ## Blocking issues
 
