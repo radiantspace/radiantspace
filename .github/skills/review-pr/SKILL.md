@@ -1,8 +1,8 @@
 ---
 name: review-pr
 description: >-
-  Review a pull request, filter for high-confidence findings, and stage concise
-  humane comments without publishing them.
+  Review a pull request, filter for high-confidence findings, stage concise
+  humane comments, and provide a friendly copy-pastable review body.
 user-invocable: true
 ---
 
@@ -137,22 +137,51 @@ without publishing a workaround.
 ## Report
 
 Lead with one status line containing the blocker count, suggestion count, and
-duplicate count. Then list each verified finding once, blockers first, using:
+duplicate count.
 
+Then output a friendly top-level review body as raw Markdown in a fenced
+`markdown` code block. This block is required even when there are no actionable
+findings so the user can paste it directly into GitHub without reconstructing
+headings, lists, or attribution.
+
+Write the body as a reviewer speaking directly to the author. Open with one or
+two substantive sentences assessing the overall change. Be warm and direct, but
+avoid canned praise, filler, staging details, duplicate counts, and internal
+review process language.
+
+Use this structure:
+
+````markdown
 ```markdown
-- **Blocking - `path/to/file:line`:** Concrete impact and next step. Staged.
-```
+[Brief, honest assessment of the change and its overall direction.]
 
-Use `Reported only` instead of `Staged` when no meaningful diff location exists.
-Do not repeat skipped duplicate findings or reproduce every inline comment in a
-large table.
+## Blocking issues
+
+- **`path/to/file:line` - Short finding:** Concrete impact and practical next step.
+
+## Suggestions
+
+- **`path/to/file:line` - Short finding:** Concrete improvement and practical next step.
+
+<sub>Review created with the [review-pr skill](https://github.com/radiantspace/radiantspace/tree/master/.github/skills/review-pr) and MODEL_NAME (`MODEL_ID`).</sub>
+```
+````
+
+Include every verified finding once in the body, blockers first. Keep both
+headings and write `None.` under a heading with no findings. Include nits under
+`Suggestions` only when they were requested and survived verification. For a
+finding without a meaningful diff location, use the most specific file or
+component name available instead of inventing a line number. Do not add
+`Staged`, `Reported only`, or other disposition markers to the body.
+
+Replace `MODEL_NAME` and `MODEL_ID` with the exact display name and model ID from
+the current runtime metadata. Never leave either placeholder in the output. Keep
+the attribution as the final line inside the fenced review body.
 
 If comments were staged, include a Markdown link labeled `Open staged review` to
 the canonical pull request `/files` page and state that nothing was published.
-Do not open the page.
+Place this status outside the fenced review body. Do not open the page.
 
-If there are no actionable findings, say so, report the duplicate count, and do
-not create an empty pending review or manufacture comments.
-
-End with a short attribution naming the `review-pr` skill and the exact model
-display name and model ID from the current runtime metadata.
+If there are no actionable findings, do not create an empty pending review or
+manufacture comments. Say so in the status line and still provide the fenced
+review body with `None.` under both headings.
