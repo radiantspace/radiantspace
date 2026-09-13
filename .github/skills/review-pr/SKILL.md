@@ -42,16 +42,18 @@ resolve it with a concrete check. An empty review is valid.
 
 Classify public comments with one clear merge-impact label:
 
-- **Blocking** - must be resolved before merge because it can cause incorrect
-  behavior, data loss, a security issue, or another unacceptable outcome.
+- **Potentially blocking** - worth resolving before merge because it could
+  cause incorrect behavior, data loss, a security issue, or another serious
+  outcome.
 - **Suggestion** - a concrete improvement that should not block the merge.
 - **Nit** - a trivial optional improvement. Omit nits by default unless the user
   requests an exhaustive review or a repository standard clearly supports it.
 
 Do not expose internal labels such as strategic, tactical, or critical. Stage
-every verified blocker. Rank non-blocking findings and normally stage no more
-than the three highest-value suggestions. Consolidate repeated instances of the
-same underlying problem into one representative comment.
+every verified potentially blocking finding. Rank the remaining findings and
+normally stage no more than the three highest-value suggestions. Consolidate
+repeated instances of the same underlying problem into one representative
+comment.
 
 ## Deduplicate existing feedback
 
@@ -70,19 +72,20 @@ Write comments for the author, not for a review taxonomy. Start with the concret
 behavior or risk, explain the realistic consequence, and give a practical next
 step when one is clear. Keep most comments to one short paragraph.
 
-Use `**Blocking:**`, `**Suggestion:**`, or `**Nit:**` as the prefix. Comment on
-the code, never the developer. Do not use canned praise, filler, accusatory
-language, or timid questions for verified defects. Ask a question only when the
-answer genuinely determines whether a problem exists. Do not prescribe a
-detailed implementation when several solutions would be valid.
+Use `**Potentially blocking:**`, `**Suggestion:**`, or `**Nit:**` as the prefix.
+Comment on the code, never the developer. Do not use canned praise, filler, or
+accusatory language. Ask a question when the answer genuinely determines
+whether a problem exists. Do not prescribe a detailed implementation when
+several solutions would be valid.
 
 Use a GitHub `suggestion` block only for a mechanical fix that is safer to apply
 than to rewrite manually.
 
 Example:
 
-> **Blocking:** This returns success after the write fails, so callers can lose
-> updates silently. Propagate the error and cover the failed-write path.
+> **Potentially blocking:** This appears to return success after the write
+> fails, which could leave callers unaware that an update was lost. It would be
+> safer to propagate the error and cover the failed-write path.
 
 ## Stage comments
 
@@ -136,8 +139,8 @@ without publishing a workaround.
 
 ## Report
 
-Lead with one status line containing the blocker count, suggestion count, and
-duplicate count.
+Lead with one status line containing the potentially blocking finding count,
+suggestion count, and duplicate count.
 
 Then output a friendly top-level review body as raw Markdown in a fenced
 `markdown` code block. This block is required even when there are no actionable
@@ -155,7 +158,7 @@ Use this structure:
 ```markdown
 [Brief, honest assessment of the change and its overall direction.]
 
-## Blocking issues
+## Potentially blocking
 
 - **`path/to/file:line` - Short finding:** Concrete impact and practical next step.
 
@@ -167,12 +170,12 @@ Use this structure:
 ```
 ````
 
-Include every verified finding once in the body, blockers first. Keep both
-headings and write `None.` under a heading with no findings. Include nits under
-`Suggestions` only when they were requested and survived verification. For a
-finding without a meaningful diff location, use the most specific file or
-component name available instead of inventing a line number. Do not add
-`Staged`, `Reported only`, or other disposition markers to the body.
+Include every verified finding once in the body, potentially blocking findings
+first. Keep both headings and write `None.` under a heading with no findings.
+Include nits under `Suggestions` only when they were requested and survived
+verification. For a finding without a meaningful diff location, use the most
+specific file or component name available instead of inventing a line number.
+Do not add `Staged`, `Reported only`, or other disposition markers to the body.
 
 Replace `MODEL_NAME` and `MODEL_ID` with the exact display name and model ID from
 the current runtime metadata. Never leave either placeholder in the output. Keep
